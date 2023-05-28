@@ -21,7 +21,7 @@ async function something() {
         </li>
       </ul>
     </div>
-    <button @click="something">Add</button>
+    <button class="btn btn-primary" @click="something">Add</button>
     <button @click="store.getExpenses()">Fetch Expenses</button>
   </main>
 </template>
