@@ -1,15 +1,13 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
 import { useExpenseStore } from '@/stores/expenses'
+import ExpenseComponent from '@/components/ExpenseComponent.vue'
 
 const store = useExpenseStore()
 
-function something() {
-  store.expenses.push({
-    id: 1,
+async function something() {
+  await store.addExpense({
     amount: 100,
-    description: 'test',
-    addedAt: '2021-10-10'
+    description: 'test'
   })
 }
 </script>
@@ -19,12 +17,11 @@ function something() {
     <div>
       <ul>
         <li v-for="expense in store.expenses" :key="expense.id">
-          {{ expense.id }} - {{ expense.amount }} - {{ expense.description }} -
-          {{ expense.addedAt }}
+          <ExpenseComponent :expense="expense" />
         </li>
       </ul>
     </div>
     <button @click="something">Add</button>
-    <button @click="store.setExpenses()">Fetch Expenses</button>
+    <button @click="store.getExpenses()">Fetch Expenses</button>
   </main>
 </template>

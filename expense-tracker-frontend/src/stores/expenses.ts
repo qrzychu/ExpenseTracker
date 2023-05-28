@@ -1,11 +1,8 @@
-import { ref, computed, type Ref } from 'vue'
+import { ref, type Ref } from 'vue'
 import { defineStore } from 'pinia'
 import OpenAPIClientAxios from 'openapi-client-axios'
 import type { Client } from '@/api/client'
-import { type Components } from '@/api/client'
-
-// @ts-ignore
-import Expense = Components.Schemas.Expense
+import type { IExpense } from '@/types/expense'
 
 console.log(import.meta.env)
 
@@ -21,14 +18,34 @@ const api: Client = await axiosInstance.getClient<Client>()
 api.defaults.baseURL = baseURL
 
 export const useExpenseStore = defineStore('expense', () => {
-  const expenses: Ref<Expense[]> = ref([])
+  const expenses: Ref<IExpense[]> = ref([])
 
-  async function setExpenses() {
-    console.log('setExpenses')
-    let a = await api.GetExpenses()
-    console.log(a)
-    expenses.value = a.data
+  async function getExpenses() {
+    expenses.value = (await api.GetExpenses()).data.map((e) => {
+      return {
+        id: e.id!,
+        description: e.description!,
+        amount: e.amount!,
+        createdAt: e.createdAt!,
+        modifiedAt: e.modifiedAt!
+      }
+    })
   }
 
-  return { expenses, setExpenses }
+  async function addExpense(expense: IExpense) {
+    await api.AddExpense(null, expense)
+    await getExpenses()
+  }
+
+  async function updateExpense(expense: IExpense) {
+    await api.UpdateExpense(null, expense)
+    await getExpenses()
+  }
+
+  async function deleteExpense(expense: IExpense) {
+    await api.DeleteExpense({ id: expense.id! })
+    await getExpenses()
+  }
+
+  return { expenses, getExpenses, addExpense, updateExpense, deleteExpense }
 })

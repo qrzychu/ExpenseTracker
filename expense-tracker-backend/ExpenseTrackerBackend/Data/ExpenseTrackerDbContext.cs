@@ -1,5 +1,4 @@
-﻿using ExpenseTrackerBackend.Data.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace ExpenseTrackerBackend.Data;
 

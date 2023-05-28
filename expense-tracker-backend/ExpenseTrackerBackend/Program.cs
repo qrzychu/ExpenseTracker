@@ -1,30 +1,24 @@
-using ExpenseTrackerBackend.Data;
+using ExpenseTrackerBackend.Expenses;
+using ExpenseTrackerBackend.Infrastructure;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
 builder.Services.AddDbContext<ExpenseTrackerDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("ExpenseTrackerDb")));
 
-var configurationSection = builder.Configuration.GetSection("AllowedOrigins");
-
-Console.WriteLine(configurationSection.Value);
-
-var allowedOrigins = configurationSection.Get<string>() ??
-                     throw new InvalidOperationException("AllowedOrigins is not configured");
-
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssemblyContaining<Program>();
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddCors(options =>
-{
-    options.AddDefaultPolicy(opt =>
-    {
-        opt.WithOrigins(allowedOrigins)
-            .AllowAnyHeader()
-            .AllowAnyMethod();
-    });
-});
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+builder.Services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
+
+
+builder.Services.SetupCors(builder.Configuration);
 
 var app = builder.Build();
 
@@ -36,9 +30,7 @@ app.UseCors();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.MapGet("/", () => "Hello World!");
-app.MapGet("/expenses", (ExpenseTrackerDbContext dbContext) => dbContext.Expenses.AsAsyncEnumerable())
-    .WithName("GetExpenses");
+app.MapExpensesApi();
 
 app.Run();
 
@@ -53,3 +45,4 @@ async Task RunMigrations(IServiceProvider services)
         await dbContext.Database.MigrateAsync();
     }
 }
+
