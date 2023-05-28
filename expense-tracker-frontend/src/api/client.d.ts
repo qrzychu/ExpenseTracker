@@ -36,32 +36,6 @@ declare namespace Components {
     }
 }
 declare namespace Paths {
-    namespace AccountLogin {
-        namespace Post {
-            export type RequestBody = Components.Schemas.LoginRequest;
-            namespace Responses {
-                export interface $200 {
-                }
-            }
-        }
-    }
-    namespace AccountLogout {
-        namespace Post {
-            namespace Responses {
-                export interface $200 {
-                }
-            }
-        }
-    }
-    namespace AccountRegister {
-        namespace Post {
-            export type RequestBody = Components.Schemas.RegisterRequest;
-            namespace Responses {
-                export interface $200 {
-                }
-            }
-        }
-    }
     namespace AddExpense {
         export type RequestBody = Components.Schemas.AddExpense;
         namespace Responses {
@@ -98,6 +72,26 @@ declare namespace Paths {
             export type $200 = Components.Schemas.ExpenseDto[];
         }
     }
+    namespace Login {
+        export type RequestBody = Components.Schemas.LoginRequest;
+        namespace Responses {
+            export interface $200 {
+            }
+        }
+    }
+    namespace Logout {
+        namespace Responses {
+            export interface $200 {
+            }
+        }
+    }
+    namespace Register {
+        export type RequestBody = Components.Schemas.RegisterRequest;
+        namespace Responses {
+            export interface $200 {
+            }
+        }
+    }
     namespace UpdateExpense {
         export type RequestBody = Components.Schemas.UpdateExpense;
         namespace Responses {
@@ -108,6 +102,30 @@ declare namespace Paths {
 }
 
 export interface OperationMethods {
+  /**
+   * Login
+   */
+  'Login'(
+    parameters?: Parameters<UnknownParamsObject> | null,
+    data?: Paths.Login.RequestBody,
+    config?: AxiosRequestConfig  
+  ): OperationResponse<Paths.Login.Responses.$200>
+  /**
+   * Logout
+   */
+  'Logout'(
+    parameters?: Parameters<UnknownParamsObject> | null,
+    data?: any,
+    config?: AxiosRequestConfig  
+  ): OperationResponse<Paths.Logout.Responses.$200>
+  /**
+   * Register
+   */
+  'Register'(
+    parameters?: Parameters<UnknownParamsObject> | null,
+    data?: Paths.Register.RequestBody,
+    config?: AxiosRequestConfig  
+  ): OperationResponse<Paths.Register.Responses.$200>
   /**
    * GetExpenses
    */
@@ -152,10 +170,34 @@ export interface OperationMethods {
 
 export interface PathsDictionary {
   ['/Account/Login']: {
+    /**
+     * Login
+     */
+    'post'(
+      parameters?: Parameters<UnknownParamsObject> | null,
+      data?: Paths.Login.RequestBody,
+      config?: AxiosRequestConfig  
+    ): OperationResponse<Paths.Login.Responses.$200>
   }
   ['/Account/Logout']: {
+    /**
+     * Logout
+     */
+    'post'(
+      parameters?: Parameters<UnknownParamsObject> | null,
+      data?: any,
+      config?: AxiosRequestConfig  
+    ): OperationResponse<Paths.Logout.Responses.$200>
   }
   ['/Account/Register']: {
+    /**
+     * Register
+     */
+    'post'(
+      parameters?: Parameters<UnknownParamsObject> | null,
+      data?: Paths.Register.RequestBody,
+      config?: AxiosRequestConfig  
+    ): OperationResponse<Paths.Register.Responses.$200>
   }
   ['/expenses']: {
     /**

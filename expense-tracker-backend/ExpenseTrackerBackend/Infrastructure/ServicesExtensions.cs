@@ -11,11 +11,12 @@ public static class ServicesExtensions
     
         services.AddCors(options =>
         {
-            options.AddDefaultPolicy(opt =>
+            options.AddPolicy("cors", opt =>
             {
-                opt.WithOrigins(allowedOrigins)
+                opt.WithOrigins("http://localhost:5001", "http://127.0.0.1:5001")
                     .AllowAnyHeader()
-                    .AllowAnyMethod();
+                    .AllowAnyMethod()
+                    .AllowCredentials();
             });
         });
     }

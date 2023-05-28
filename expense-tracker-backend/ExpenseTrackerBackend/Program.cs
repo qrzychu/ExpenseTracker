@@ -47,7 +47,7 @@ var app = builder.Build();
 // for simplicity - it would be a pipeline step
 await RunMigrations(app.Services);
 
-app.UseCors();
+app.UseCors("cors");
 
 app.UseRouting();
 app.UseAuthentication();

@@ -5,7 +5,7 @@
   "verbatimModuleSyntax": false,
   "compilerOptions": {
     "esModuleInterop": true,
-    "lib": ["ESNext"],
+    "lib": ["ESNext", "DOM"],
     "module": "ESNext",
     "target": "ESNext",
     "composite": true,

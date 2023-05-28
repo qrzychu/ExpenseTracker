@@ -4,18 +4,40 @@ import OpenAPIClientAxios from 'openapi-client-axios'
 import type { Client } from '@/api/client'
 import type { IExpense } from '@/types/expense'
 
-console.log(import.meta.env)
+// import { openapi } from '/src/api/swagger.json' assert { type: 'json' }
 
 const baseURL = import.meta.env.VITE_APP_BASE_URL
-console.log('baseURL: ' + baseURL)
 
-const axiosInstance = await new OpenAPIClientAxios({
-  definition: baseURL + 'swagger/v1/swagger.json'
+const axiosInstance = new OpenAPIClientAxios({
+  definition: baseURL + 'swagger/v1/swagger.json',
+  axiosConfigDefaults: {
+    withCredentials: true
+  }
 })
 
 await axiosInstance.init()
 const api: Client = await axiosInstance.getClient<Client>()
+
+console.log(api.defaults)
+
 api.defaults.baseURL = baseURL
+api.defaults.withCredentials = true
+
+export const useLoginStore = defineStore('login', () => {
+  async function login(username: string, password: string) {
+    await api.Login(null, { username, password })
+  }
+
+  async function logout() {
+    await api.Logout()
+  }
+
+  async function register(username: string, password: string) {
+    await api.Register(null, { username, password })
+  }
+
+  return { login, logout, register }
+})
 
 export const useExpenseStore = defineStore('expense', () => {
   const expenses: Ref<IExpense[]> = ref([])

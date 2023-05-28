@@ -19,10 +19,10 @@ public class AccountController : ControllerBase
         _db = db;
     }
 
-    [HttpPost]
+    [HttpPost(Name = nameof(Login))]
     public async Task<IActionResult> Login([FromBody] LoginRequest request, CancellationToken ct)
     {
-        var result = await _signInManager.PasswordSignInAsync(request.Username, request.Password, false, false);
+        var result = await _signInManager.PasswordSignInAsync(request.Username, request.Password, true, false);
         if (result.Succeeded)
         {
             return Ok();
@@ -31,7 +31,7 @@ public class AccountController : ControllerBase
         return Unauthorized();
     }
 
-    [HttpPost]
+    [HttpPost(Name = nameof(Logout))]
     [Authorize]
     public async Task<IActionResult> Logout()
     {
@@ -39,7 +39,7 @@ public class AccountController : ControllerBase
         return Ok();
     }
 
-    [HttpPost]
+    [HttpPost(Name = nameof(Register))]
     public async Task<IResult> Register([FromBody] RegisterRequest request)
     {
         await using var transaction = await _db.Database.BeginTransactionAsync();
