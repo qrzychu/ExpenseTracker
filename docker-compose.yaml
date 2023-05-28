@@ -1,0 +1,35 @@
+﻿volumes:
+  postgres-data:
+
+services:
+  backend:
+    build: ./expense-tracker-backend/ExpenseTrackerBackend
+    ports:
+      - "5002:8000"
+    depends_on:
+      - db
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://*:8000
+      - ConnectionStrings__ExpenseTrackerDb=Server=db;Port=5432;Database=ExpenseTrackerDb;User Id=postgres;Password=postgres;
+  
+  frontend:
+    depends_on:
+      - backend
+    build: ./expense-tracker-frontend
+    environment:
+      - VITE_APP_BASE_URL=http://backend:5002/
+    ports:
+      - "5001:8080"
+  
+  db:
+    image: postgres:alpine
+    volumes:
+      - postgres-data:/var/lib/postgresql/data/
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+      
