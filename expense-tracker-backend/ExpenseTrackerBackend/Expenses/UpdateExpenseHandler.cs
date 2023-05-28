@@ -8,10 +8,10 @@ namespace ExpenseTrackerBackend.Expenses;
 public class UpdateExpenseHandler : IRequestHandler<UpdateExpense, Result<int>>
 {
     private readonly ExpenseTrackerDbContext _db;
-    private readonly IValidator<IExpense> _validator;
+    private readonly IValidator<IExpenseData> _validator;
     private readonly IDateTimeProvider _dateTimeProvider;
 
-    public UpdateExpenseHandler(ExpenseTrackerDbContext db, IValidator<IExpense> validator, IDateTimeProvider dateTimeProvider)
+    public UpdateExpenseHandler(ExpenseTrackerDbContext db, IValidator<IExpenseData> validator, IDateTimeProvider dateTimeProvider)
     {
         _db = db;
         _validator = validator;
@@ -44,4 +44,4 @@ public class UpdateExpenseHandler : IRequestHandler<UpdateExpense, Result<int>>
 }
 
 public record struct UpdateExpense
-    (int Id, string Description, decimal Amount) : IRequest<Result<int>>, IExpense;
+    (int Id, string Description, decimal Amount) : IRequest<Result<int>>, IExpenseData;

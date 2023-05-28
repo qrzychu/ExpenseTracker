@@ -12,12 +12,21 @@ declare namespace Components {
             description?: string | null;
             amount?: number; // double
         }
-        export interface Expense {
+        export interface ExpenseDto {
             id?: number; // int32
             description?: string | null;
             amount?: number; // double
             createdAt?: string; // date-time
             modifiedAt?: string; // date-time
+            ownerId?: string; // uuid
+        }
+        export interface LoginRequest {
+            username?: string | null;
+            password?: string | null;
+        }
+        export interface RegisterRequest {
+            username?: string | null;
+            password?: string | null;
         }
         export interface UpdateExpense {
             id?: number; // int32
@@ -27,6 +36,32 @@ declare namespace Components {
     }
 }
 declare namespace Paths {
+    namespace AccountLogin {
+        namespace Post {
+            export type RequestBody = Components.Schemas.LoginRequest;
+            namespace Responses {
+                export interface $200 {
+                }
+            }
+        }
+    }
+    namespace AccountLogout {
+        namespace Post {
+            namespace Responses {
+                export interface $200 {
+                }
+            }
+        }
+    }
+    namespace AccountRegister {
+        namespace Post {
+            export type RequestBody = Components.Schemas.RegisterRequest;
+            namespace Responses {
+                export interface $200 {
+                }
+            }
+        }
+    }
     namespace AddExpense {
         export type RequestBody = Components.Schemas.AddExpense;
         namespace Responses {
@@ -60,7 +95,7 @@ declare namespace Paths {
     }
     namespace GetExpenses {
         namespace Responses {
-            export type $200 = Components.Schemas.Expense[];
+            export type $200 = Components.Schemas.ExpenseDto[];
         }
     }
     namespace UpdateExpense {
@@ -116,6 +151,12 @@ export interface OperationMethods {
 }
 
 export interface PathsDictionary {
+  ['/Account/Login']: {
+  }
+  ['/Account/Logout']: {
+  }
+  ['/Account/Register']: {
+  }
   ['/expenses']: {
     /**
      * GetExpenses
@@ -151,8 +192,6 @@ export interface PathsDictionary {
       data?: any,
       config?: AxiosRequestConfig  
     ): OperationResponse<Paths.GetExpense.Responses.$200>
-  }
-  ['/delete/{id}']: {
     /**
      * DeleteExpense
      */

@@ -1,4 +1,6 @@
-﻿using ExpenseTrackerBackend.Infrastructure;
+﻿using System.Security.Claims;
+using ExpenseTrackerBackend.Infrastructure;
+using ExpenseTrackerBackend.Services;
 using FluentValidation;
 
 namespace ExpenseTrackerBackend.Expenses;
@@ -6,14 +8,16 @@ namespace ExpenseTrackerBackend.Expenses;
 public class AddExpenseHandler : IRequestHandler<AddExpense, Result<int>>
 {
     private readonly ExpenseTrackerDbContext _db;
-    private readonly IValidator<IExpense> _validator;
+    private readonly IValidator<IExpenseData> _validator;
     private readonly IDateTimeProvider _dateTimeProvider;
+    private ICurrentUserService _currentUser;
 
-    public AddExpenseHandler(ExpenseTrackerDbContext db, IValidator<IExpense> validator, IDateTimeProvider dateTimeProvider)
+    public AddExpenseHandler(ExpenseTrackerDbContext db, IValidator<IExpenseData> validator, IDateTimeProvider dateTimeProvider, ICurrentUserService currentUser)
     {
         _db = db;
         _validator = validator;
         _dateTimeProvider = dateTimeProvider;
+        _currentUser = currentUser;
     }
 
     public async Task<Result<int>> Handle(AddExpense request, CancellationToken cancellationToken)
@@ -28,7 +32,9 @@ public class AddExpenseHandler : IRequestHandler<AddExpense, Result<int>>
         {
             Description = request.Description,
             Amount = request.Amount,
-            CreatedAt = _dateTimeProvider.UtcNow
+            CreatedAt = _dateTimeProvider.UtcNow,
+            ModifiedAt = _dateTimeProvider.UtcNow,
+            OwnerId = (await _currentUser.GetCurrentUser()).Id
         };
 
         await _db.Expenses.AddAsync(expense, cancellationToken);
@@ -38,7 +44,7 @@ public class AddExpenseHandler : IRequestHandler<AddExpense, Result<int>>
     }
 }
 
-public record struct AddExpense() : IRequest<Result<int>>, IExpense
+public record struct AddExpense() : IRequest<Result<int>>, IExpenseData
 {
     public string Description { get; set; } = "";
     public decimal Amount { get; set; } = 0;

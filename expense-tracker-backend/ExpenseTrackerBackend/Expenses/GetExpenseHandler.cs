@@ -1,18 +1,30 @@
-﻿namespace ExpenseTrackerBackend.Expenses;
+﻿using ExpenseTrackerBackend.Data.DTO;
+using ExpenseTrackerBackend.Infrastructure;
+using ExpenseTrackerBackend.Properties.AccessPolicies;
+using ExpenseTrackerBackend.Services;
+using Microsoft.EntityFrameworkCore;
 
-public class GetExpenseHandler : IRequestHandler<GetExpense, Expense?>
+namespace ExpenseTrackerBackend.Expenses;
+
+public class GetExpenseHandler : IRequestHandler<GetExpense, ExpenseDto?>
 {
     private readonly ExpenseTrackerDbContext _db;
+    private readonly ICurrentUserService _currentUser;
 
-    public GetExpenseHandler(ExpenseTrackerDbContext db)
+    public GetExpenseHandler(ExpenseTrackerDbContext db, ICurrentUserService currentUser)
     {
         _db = db;
+        _currentUser = currentUser;
     }
 
-    public async Task<Expense?> Handle(GetExpense request, CancellationToken cancellationToken)
+    public async Task<ExpenseDto?> Handle(GetExpense request, CancellationToken cancellationToken)
     {
-        return await _db.Expenses.FindAsync(new object[] {request.Id}, cancellationToken);
+        var result = await _db.Expenses
+            .ApplyPolicy(new OwnerCanAccessHisExpenses(), await _currentUser.GetCurrentUser())
+            .FirstOrDefaultAsync(x => x.Id ==  request.Id, cancellationToken);
+        
+        return result?.MapToDto();
     }
 }
 
-public record struct GetExpense(int Id) : IRequest<Expense?>;
+public record struct GetExpense(int Id) : IRequest<ExpenseDto?>;
