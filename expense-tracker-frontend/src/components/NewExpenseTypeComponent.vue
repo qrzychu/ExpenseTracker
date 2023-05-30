@@ -1,8 +1,7 @@
-﻿<script setup lang="ts">
-import { h, reactive } from 'vue'
+﻿<script setup>
+import { reactive } from 'vue'
 import { helpers, required } from '@vuelidate/validators'
 import { useExpenseTypeStore } from '@/stores/expensesTypes'
-import type { IExpenseType } from '@/types/expense'
 import useVuelidate from '@vuelidate/core'
 
 const expenseTypes = useExpenseTypeStore()
@@ -16,10 +15,10 @@ const data = reactive({
 const rules = {
   name: {
     required,
-    notEmpty: helpers.withMessage('Name must not be empty', (value: string) => value.trim() !== ''),
+    notEmpty: helpers.withMessage('Name must not be empty', (value) => value.trim() !== ''),
     unique: helpers.withMessage(
       'Name must be unique',
-      (value: string) =>
+      (value) =>
         !expenseTypes.expenseTypes.some(
           (expenseType) => expenseType.name.toLowerCase().trim() === value.toLowerCase().trim()
         )
@@ -27,16 +26,14 @@ const rules = {
   }
 }
 
-const emit = defineEmits<{
-  (e: 'expenseTypeCreated', id: number): void
-}>()
+const emit = defineEmits(['expenseTypeCreated'])
 
 const $v = useVuelidate(rules, data)
 $v.value.$touch()
 
 async function createExpenseType() {
   data.message = ''
-  var result = await expenseTypes.addExpenseType(data)
+  const result = await expenseTypes.addExpenseType(data)
   if (result) {
     emit('expenseTypeCreated', result)
   } else {

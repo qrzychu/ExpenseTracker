@@ -21,6 +21,7 @@ public class GetExpensesHandler : IRequestHandler<GetExpenses, IEnumerable<Expen
     public async Task<IEnumerable<ExpenseDto>> Handle(GetExpenses request, CancellationToken cancellationToken)
     {
         return _db.Expenses.AsNoTracking()
+            .Include(x => x.ExpenseType)
             .ApplyPolicy(new OwnerCanAccessOwnExpenses(), await _currentUser.GetCurrentUser())
             .Select(x => x.MapToDto());
     }

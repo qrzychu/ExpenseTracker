@@ -1,25 +1,10 @@
 <script setup lang="ts">
 import { useExpenseStore } from '@/stores/expenses'
 import ExpenseComponent from '@/components/ExpenseComponent.vue'
-import { onBeforeMount, onMounted, Ref, ref } from 'vue'
-import { useLoginStore } from '@/stores/loginStore'
-import { useRouter } from 'vue-router'
-import type { IExpenseType } from '@/types/expense'
+import { onMounted } from 'vue'
 import NewExpenseComponent from '@/components/NewExpenseComponent.vue'
 
 const store = useExpenseStore()
-const loginStore = useLoginStore()
-const router = useRouter()
-
-interface IData {
-  addingExpenseType: boolean
-  newExpenseType: IExpenseType | null
-}
-
-const data: ref<IData> = ref({
-  addingExpenseType: false,
-  newExpenseType: null
-})
 
 onMounted(async () => {
   await store.getExpenses()

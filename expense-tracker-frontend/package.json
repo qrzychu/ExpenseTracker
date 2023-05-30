@@ -15,6 +15,7 @@
     "codegen": "npx typegen http://localhost:5002/swagger/v1/swagger.json > src/api/client.d.ts"
   },
   "dependencies": {
+    "@types/vuelidate": "^0.7.18",
     "@vuelidate/core": "^2.0.2",
     "@vuelidate/validators": "^2.0.2",
     "axios": "^1.4.0",

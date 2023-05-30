@@ -12,6 +12,7 @@ const props = defineProps<IExpenseComponentProps>()
 <template>
   <div class="card shadow m-4 grow">
     <span class="card-header">Description: {{ expense.description }}</span>
+    <span class="card-header bg-white"> {{ expense.expenseType.name }}</span>
     <div class="container p-4">
       <span class="d-block">Amount: {{ expense.amount }} $</span>
       <span class="small d-bloc"

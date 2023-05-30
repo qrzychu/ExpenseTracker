@@ -15,6 +15,8 @@ Frontend:
 - styling
 - error handling for http requests - expected errors are still logged in console
 - component for validation message
+- figure out why importing vuelidate breaks typescript compiler
+- some kind of expense type management
 
 Backend:
 

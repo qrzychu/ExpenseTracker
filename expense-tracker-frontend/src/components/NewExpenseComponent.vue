@@ -1,11 +1,10 @@
-﻿<script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue'
-import type { IExpense, IExpenseType } from '@/types/expense'
+﻿<script setup>
+import { onMounted, reactive } from 'vue'
 import { useExpenseTypeStore } from '@/stores/expensesTypes'
 import { useExpenseStore } from '@/stores/expenses'
-import useVuelidate from '@vuelidate/core'
-import { helpers, minLength, minValue, required } from '@vuelidate/validators'
+import { helpers, minLength, required } from '@vuelidate/validators'
 import NewExpenseTypeComponent from '@/components/NewExpenseTypeComponent.vue'
+import useVuelidate from "@vuelidate/core";
 
 const expenseTypes = useExpenseTypeStore()
 const expenses = useExpenseStore()
@@ -14,13 +13,7 @@ onMounted(async () => {
   await expenseTypes.getExpenseTypes()
 })
 
-interface INewExpense {
-  description: string
-  amount: number
-  expenseType: IExpenseType | null | 'new'
-}
-
-const data = reactive<INewExpense>({
+const data = reactive({
   description: '',
   amount: 0,
   expenseType: null
@@ -34,13 +27,13 @@ const rules = {
   amount: {
     minValue: helpers.withMessage(
       'Amount must be non zero and positive',
-      (value: number) => value > 0
+      (value) => value > 0
     )
   },
   expenseType: {
     anObject: helpers.withMessage(
       'Expense type must be selected',
-      (value: number | null | 'new') => value !== null && value !== 'new'
+      (value) => value !== null && value !== 'new'
     )
   }
 }
@@ -51,11 +44,11 @@ function addExpense() {
   expenses.addExpense({
     description: data.description,
     amount: data.amount,
-    expenseTypeId: (data.expenseType as IExpenseType)!.id
+    expenseTypeId: data.expenseType.id
   })
 }
 
-function expenseTypeCreated(id: number) {
+function expenseTypeCreated(id) {
   console.log('created expense type', id)
   data.expenseType = expenseTypes.expenseTypes.find((x) => x.id === id)
 }
@@ -105,7 +98,7 @@ function expenseTypeCreated(id: number) {
         </select>
 
         <div class="row" v-if="data.expenseType === 'new'"></div>
-        <div clas="row" v-if="$v.expenseType.$invalid && $v.expenseType.$dirty">
+        <div class="row" v-if="$v.expenseType.$invalid && $v.expenseType.$dirty">
           <p class="text-danger">{{ $v.expenseType.$errors[0].$message }}</p>
         </div>
 
