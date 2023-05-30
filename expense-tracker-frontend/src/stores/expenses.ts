@@ -1,43 +1,9 @@
 import { ref, type Ref } from 'vue'
 import { defineStore } from 'pinia'
-import OpenAPIClientAxios from 'openapi-client-axios'
-import type { Client } from '@/api/client'
-import type { IExpense } from '@/types/expense'
+import type { IExpense, IExpenseType } from '@/types/expense'
+import ApiClient from '@/api/apiClient'
 
-// import { openapi } from '/src/api/swagger.json' assert { type: 'json' }
-
-const baseURL = import.meta.env.VITE_APP_BASE_URL
-
-const axiosInstance = new OpenAPIClientAxios({
-  definition: baseURL + 'swagger/v1/swagger.json',
-  axiosConfigDefaults: {
-    withCredentials: true
-  }
-})
-
-await axiosInstance.init()
-const api: Client = await axiosInstance.getClient<Client>()
-
-console.log(api.defaults)
-
-api.defaults.baseURL = baseURL
-api.defaults.withCredentials = true
-
-export const useLoginStore = defineStore('login', () => {
-  async function login(username: string, password: string) {
-    await api.Login(null, { username, password })
-  }
-
-  async function logout() {
-    await api.Logout()
-  }
-
-  async function register(username: string, password: string) {
-    await api.Register(null, { username, password })
-  }
-
-  return { login, logout, register }
-})
+const api = ApiClient
 
 export const useExpenseStore = defineStore('expense', () => {
   const expenses: Ref<IExpense[]> = ref([])
@@ -49,12 +15,17 @@ export const useExpenseStore = defineStore('expense', () => {
         description: e.description!,
         amount: e.amount!,
         createdAt: e.createdAt!,
-        modifiedAt: e.modifiedAt!
+        modifiedAt: e.modifiedAt!,
+        expenseType: e.expenseType! as IExpenseType
       }
     })
   }
 
-  async function addExpense(expense: IExpense) {
+  async function addExpense(expense: {
+    description: string
+    amount: number
+    expenseTypeId: number
+  }) {
     await api.AddExpense(null, expense)
     await getExpenses()
   }
@@ -69,5 +40,9 @@ export const useExpenseStore = defineStore('expense', () => {
     await getExpenses()
   }
 
-  return { expenses, getExpenses, addExpense, updateExpense, deleteExpense }
+  function reset() {
+    expenses.value = []
+  }
+
+  return { expenses, getExpenses, addExpense, updateExpense, deleteExpense, reset }
 })

@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,7 +11,7 @@ namespace ExpenseTrackerBackend.Controllers;
 public class AccountController : ControllerBase
 {
     private readonly SignInManager<User> _signInManager;
-    private ExpenseTrackerDbContext _db;
+    private readonly ExpenseTrackerDbContext _db;
 
     public AccountController(SignInManager<User> signInManager, ExpenseTrackerDbContext db)
     {
@@ -46,7 +46,7 @@ public class AccountController : ControllerBase
         var result = await _signInManager.UserManager.CreateAsync(new User(request.Username), request.Password);
         if (result.Succeeded)
         {
-            await _signInManager.SignInAsync(new User(request.Username), true);
+            await _signInManager.PasswordSignInAsync(request.Username, request.Password, true, false);
             await transaction.CommitAsync();
             return TypedResults.Ok();
         }
@@ -56,8 +56,25 @@ public class AccountController : ControllerBase
             Title = "Registration failed", Detail = string.Join(";", result.Errors.Select(x => x.Description))
         });
     }
+
+    [HttpGet(Name = nameof(GetMe))]
+    [Authorize]
+    [Produces(typeof(UserInfoDto))]
+    public async Task<IResult> GetMe()
+    {
+        var user = await _signInManager.UserManager.GetUserAsync(User);
+
+        if (user is null)
+        {
+            return TypedResults.Unauthorized();
+        }
+
+        return TypedResults.Ok(new UserInfoDto(user.Id, user.UserName!));
+    }
 }
 
 public record struct LoginRequest(string Username, string Password);
 
 public record struct RegisterRequest(string Username, string Password);
+
+public record struct UserInfoDto(Guid Id, string Username);

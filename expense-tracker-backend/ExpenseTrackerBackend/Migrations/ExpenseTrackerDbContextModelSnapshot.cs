@@ -40,6 +40,9 @@ namespace ExpenseTrackerBackend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("ExpenseTypeId")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -48,9 +51,79 @@ namespace ExpenseTrackerBackend.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ExpenseTypeId");
+
                     b.HasIndex("OwnerId");
 
                     b.ToTable("Expenses");
+                });
+
+            modelBuilder.Entity("ExpenseTrackerBackend.Data.Models.ExpenseType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<bool>("IsArchived")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("NormalizedName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatorId", "NormalizedName")
+                        .IsUnique();
+
+                    b.ToTable("ExpenseTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2023, 5, 30, 11, 30, 21, 187, DateTimeKind.Utc).AddTicks(4875),
+                            Description = "Food groceries",
+                            IsArchived = false,
+                            Name = "Food",
+                            NormalizedName = "food"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(2023, 5, 30, 11, 30, 21, 187, DateTimeKind.Utc).AddTicks(4879),
+                            Description = "Entertainment expenses",
+                            IsArchived = false,
+                            Name = "Entertainment",
+                            NormalizedName = "entertainment"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(2023, 5, 30, 11, 30, 21, 187, DateTimeKind.Utc).AddTicks(4880),
+                            Description = "Travel expenses",
+                            IsArchived = false,
+                            Name = "Travel",
+                            NormalizedName = "travel"
+                        });
                 });
 
             modelBuilder.Entity("ExpenseTrackerBackend.Data.Models.Role", b =>
@@ -250,13 +323,30 @@ namespace ExpenseTrackerBackend.Migrations
 
             modelBuilder.Entity("ExpenseTrackerBackend.Data.Models.Expense", b =>
                 {
+                    b.HasOne("ExpenseTrackerBackend.Data.Models.ExpenseType", "ExpenseType")
+                        .WithMany()
+                        .HasForeignKey("ExpenseTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("ExpenseTrackerBackend.Data.Models.User", "Owner")
                         .WithMany()
                         .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("ExpenseType");
+
                     b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("ExpenseTrackerBackend.Data.Models.ExpenseType", b =>
+                {
+                    b.HasOne("ExpenseTrackerBackend.Data.Models.User", "Creator")
+                        .WithMany()
+                        .HasForeignKey("CreatorId");
+
+                    b.Navigation("Creator");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>

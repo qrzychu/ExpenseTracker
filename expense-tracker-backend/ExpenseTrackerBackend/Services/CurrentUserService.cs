@@ -5,15 +5,13 @@ namespace ExpenseTrackerBackend.Services;
 
 public class CurrentUserService : ICurrentUserService
 {
-    private readonly ExpenseTrackerDbContext _db;
-    private Lazy<Task<User>> _currentUser;
+    private readonly Lazy<Task<User>> _currentUser;
 
     public CurrentUserService(ExpenseTrackerDbContext db, IHttpContextAccessor httpContext)
     {
-        _db = db;
         _currentUser = new Lazy<Task<User>>(async () =>
         {
-            var user = await _db.Users.FirstOrDefaultAsync(x =>
+            var user = await db.Users.FirstOrDefaultAsync(x =>
                 x.Id == Guid.Parse(httpContext.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)));
             return user ?? throw new Exception("User not found");
         });

@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿namespace ExpenseTrackerBackend.AccessPolicies;
 
-namespace ExpenseTrackerBackend.Properties.AccessPolicies;
-
-public class OwnerCanAccessHisExpenses : IAccessPolicy<Expense>
+public class OwnerCanAccessOwnExpenses : IAccessPolicy<Expense>
 {
     public IQueryable<Expense> Apply(IQueryable<Expense> queryable, User user)
     {

@@ -1,6 +1,5 @@
 ﻿using ExpenseTrackerBackend.Infrastructure;
 using FluentValidation;
-using Microsoft.AspNetCore.Identity;
 
 namespace ExpenseTrackerBackend.Data.Models;
 
@@ -13,12 +12,21 @@ public class Expense : IExpenseData
     public DateTime ModifiedAt { get; set; }
     public Guid OwnerId { get; set; }
     public User Owner { get; set; } = null!;
+
+    public ExpenseType ExpenseType { get; set; } = null!;
+    public int ExpenseTypeId { get; set; }
 }
 
 public interface IExpenseData
 {
     string Description { get; set; }
     decimal Amount { get; set; }
+    int ExpenseTypeId { get; set; }
+}
+
+public interface IExpenseWithRelations : IExpenseData
+{
+    ExpenseType ExpenseType { get; set; }
 }
 
 public class ExpenseValidator : AbstractValidator<IExpenseData>

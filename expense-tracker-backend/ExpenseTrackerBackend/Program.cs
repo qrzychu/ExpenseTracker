@@ -1,4 +1,3 @@
-using ExpenseTrackerBackend.Expenses;
 using ExpenseTrackerBackend.Infrastructure;
 using ExpenseTrackerBackend.Services;
 using FluentValidation;
@@ -55,21 +54,16 @@ app.UseAuthorization();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-
-app.MapExpensesApi();
 app.MapControllers();
 
 app.Run();
 
 async Task RunMigrations(IServiceProvider services)
 {
-    using (var scope = services.CreateScope())
-    {
-        var dbContext = scope.ServiceProvider
-            .GetRequiredService<ExpenseTrackerDbContext>();
+    using var scope = services.CreateScope();
+    var dbContext = scope.ServiceProvider
+        .GetRequiredService<ExpenseTrackerDbContext>();
 
-        // Here is the migration executed
-        await dbContext.Database.MigrateAsync();
-    }
+    await dbContext.Database.MigrateAsync();
 }
 

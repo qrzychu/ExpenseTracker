@@ -11,21 +11,21 @@ const data = ref({
 const loginStore = useLoginStore()
 const router = useRouter()
 
-async function login() {
-  await loginStore.login(data.value.username, data.value.password)
+async function register() {
+  await loginStore.register(data.value.username, data.value.password)
   await router.push('/')
 }
 </script>
 
 <template>
   <div class="container">
-    <form v-on:keyup.enter="login">
-      <p>Login</p>
+    <form v-on:keyup.enter="register">
+      <p>Register</p>
       <input type="text" v-model="data.username" placeholder="Username" />
 
       <input type="password" v-model="data.password" placeholder="Password" />
 
-      <button type="submit" @click.prevent="login">Login</button>
+      <button type="submit" @click.prevent="register">Login</button>
     </form>
   </div>
 </template>

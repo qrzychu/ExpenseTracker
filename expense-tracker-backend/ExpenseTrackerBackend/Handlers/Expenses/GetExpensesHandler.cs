@@ -1,6 +1,6 @@
-﻿using ExpenseTrackerBackend.Data.DTO;
+﻿using ExpenseTrackerBackend.AccessPolicies;
+using ExpenseTrackerBackend.Data.DTO;
 using ExpenseTrackerBackend.Infrastructure;
-using ExpenseTrackerBackend.Properties.AccessPolicies;
 using ExpenseTrackerBackend.Services;
 using LanguageExt;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +21,7 @@ public class GetExpensesHandler : IRequestHandler<GetExpenses, IEnumerable<Expen
     public async Task<IEnumerable<ExpenseDto>> Handle(GetExpenses request, CancellationToken cancellationToken)
     {
         return _db.Expenses.AsNoTracking()
-            .ApplyPolicy(new OwnerCanAccessHisExpenses(), await _currentUser.GetCurrentUser())
+            .ApplyPolicy(new OwnerCanAccessOwnExpenses(), await _currentUser.GetCurrentUser())
             .Select(x => x.MapToDto());
     }
 }

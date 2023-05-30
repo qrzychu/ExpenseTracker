@@ -1,31 +1,42 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
+import { useLoginStore } from '@/stores/loginStore'
+import { onBeforeMount } from 'vue'
+import router from '@/router'
+
+onBeforeMount(async () => {
+  await loginStore.checkLogin()
+  if (!loginStore.username) {
+    await router.push('login')
+  }
+})
+
+const loginStore = useLoginStore()
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
+  <header class="bg-primary">
+    <div>
       <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/login">Log in</RouterLink>
+        <RouterLink class="btn m-4" v-if="loginStore.username" to="/">Home</RouterLink>
+        <RouterLink class="btn m-4" v-if="!loginStore.username" to="/login">Log in</RouterLink>
+        <RouterLink class="btn m-4" v-if="!loginStore.username" to="/register">Register</RouterLink>
+        <RouterLink class="btn m-4" v-if="loginStore.username" to="/logout"
+          >Log out {{ loginStore.username }}</RouterLink
+        >
       </nav>
     </div>
   </header>
 
-  <RouterView />
+  <div class="bg-bod">
+    <RouterView />
+  </div>
 </template>
 
 <style scoped>
 header {
   line-height: 1.5;
   max-height: 100vh;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
 }
 
 nav {
@@ -51,32 +62,5 @@ nav a {
 
 nav a:first-of-type {
   border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
 }
 </style>

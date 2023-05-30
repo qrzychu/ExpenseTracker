@@ -1,6 +1,6 @@
-﻿using ExpenseTrackerBackend.Data.DTO;
+﻿using ExpenseTrackerBackend.AccessPolicies;
+using ExpenseTrackerBackend.Data.DTO;
 using ExpenseTrackerBackend.Infrastructure;
-using ExpenseTrackerBackend.Properties.AccessPolicies;
 using ExpenseTrackerBackend.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,7 +20,7 @@ public class GetExpenseHandler : IRequestHandler<GetExpense, ExpenseDto?>
     public async Task<ExpenseDto?> Handle(GetExpense request, CancellationToken cancellationToken)
     {
         var result = await _db.Expenses
-            .ApplyPolicy(new OwnerCanAccessHisExpenses(), await _currentUser.GetCurrentUser())
+            .ApplyPolicy(new OwnerCanAccessOwnExpenses(), await _currentUser.GetCurrentUser())
             .FirstOrDefaultAsync(x => x.Id ==  request.Id, cancellationToken);
         
         return result?.MapToDto();
